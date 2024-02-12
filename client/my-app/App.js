@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 
-const socketEndpoint = "https://f37c-114-48-56-200.ngrok-free.app";
+const socketEndpoint = "https://be76-114-48-56-200.ngrok-free.app/control_servo";
 
 export default function App() {
   const handleSendWebSocketMessage = async () => {
