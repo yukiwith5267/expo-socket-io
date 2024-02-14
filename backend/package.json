@@ -1,13 +1,15 @@
 {
-  "name": "socket-io-expo-backend",
+  "name": "node_servo_control",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Node.js server for controlling servo motor",
+  "main": "app.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node app.js"
   },
-  "license": "MIT",
   "dependencies": {
-    "express": "^4.17.1",
-    "socket.io": "^4.3.1"
+    "cors": "^2.8.5",
+    "express": "^4.17.2",
+    "pigpio": "^3.3.1",
+    "sleep": "^6.3.0"
   }
 }

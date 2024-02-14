@@ -1,47 +1,40 @@
-import React, { useState } from "react";
+import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import io from "socket.io-client";
 
-const socketEndpoint = "https://f37c-114-48-56-200.ngrok-free.app";
+const socketEndpoint = "https://be76-114-48-56-200.ngrok-free.app/control_servo";
 
 export default function App() {
-  const [time, setTime] = useState(null);
+  const handleSendWebSocketMessage = async () => {
+    try {
+      const response = await fetch(socketEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          command: 'toggle',
+          parameter: 'default',
+          commandType: 'command',
+        }),
+      });
 
-  const handleSendWebSocketMessage = () => {
-    const socket = io(socketEndpoint, {
-      transports: ["websocket"],
-    });
-    socket.emit("button-clicked", { message: "Button clicked!" });
-    socket.on("time-msg", (data) => {
-      setTime(new Date(data.time).toString());
-      socket.removeAllListeners();
-      socket.disconnect();
-    });
-  };
+      if (!response.ok) {
+        throw new Error('Failed to send POST request');
+      }
 
-  const handleResetTime = () => {
-    setTime(null); // 時間をリセット
+      console.log('POST request successfully sent');
+    } catch (error) {
+      console.error('Error sending POST request:', error);
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.paragraph, { fontWeight: "bold" }]}>
-        Server time
-      </Text>
-      <Text style={styles.paragraph}>{time}</Text>
-      {/* ボタンを中央に表示 */}
       <TouchableOpacity
         style={styles.buttonContainer}
         onPress={handleSendWebSocketMessage}
       >
-        <Text style={styles.buttonText}>Send WebSocket Message</Text>
-      </TouchableOpacity>
-      {/* リセットボタン */}
-      <TouchableOpacity
-        style={[styles.buttonContainer, styles.resetButton]} // 黒色のボタンと同じ大きさで赤色に設定
-        onPress={handleResetTime}
-      >
-        <Text style={styles.buttonText}>Reset Time</Text>
+        <Text style={styles.buttonText}>Send POST Request</Text>
       </TouchableOpacity>
     </View>
   );
@@ -67,8 +60,5 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontSize: 16,
-  },
-  resetButton: {
-    backgroundColor: "red", // 赤色に設定
   },
 });
