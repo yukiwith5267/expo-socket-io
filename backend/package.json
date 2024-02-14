@@ -4,7 +4,7 @@
   "description": "Node.js server for controlling servo motor",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node main.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
