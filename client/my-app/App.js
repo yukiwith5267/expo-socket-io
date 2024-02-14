@@ -1,64 +1,33 @@
-import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-
-const socketEndpoint = "https://be76-114-48-56-200.ngrok-free.app/control_servo";
+import React, { useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
+import io from 'socket.io-client';
 
 export default function App() {
-  const handleSendWebSocketMessage = async () => {
-    try {
-      const response = await fetch(socketEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          command: 'toggle',
-          parameter: 'default',
-          commandType: 'command',
-        }),
-      });
+  const [message, setMessage] = useState('');
 
-      if (!response.ok) {
-        throw new Error('Failed to send POST request');
-      }
+  useEffect(() => {
+    const socket = io('https://be76-114-48-56-200.ngrok-free.app');
 
-      console.log('POST request successfully sent');
-    } catch (error) {
-      console.error('Error sending POST request:', error);
-    }
-  };
+    socket.on('connect', () => {
+      console.log('Connected to server');
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected from server');
+    });
+
+    socket.on('time', (data) => {
+      setMessage(data);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.buttonContainer}
-        onPress={handleSendWebSocketMessage}
-      >
-        <Text style={styles.buttonText}>Send POST Request</Text>
-      </TouchableOpacity>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>{message}</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  paragraph: {
-    fontSize: 16,
-  },
-  buttonContainer: {
-    marginTop: 20,
-    backgroundColor: "#000",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-  },
-});
