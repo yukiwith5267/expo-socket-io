@@ -1,31 +1,29 @@
 const express = require('express');
-const { Gpio } = require('pigpio');
-const cors = require('cors');
-const sleep = require('sleep');
+const http = require('http');
+const socketIo = require('socket.io');
+const schedule = require('node-schedule');
 
 const app = express();
-app.use(cors());
+const server = http.createServer(app);
+const io = socketIo(server);
 
-const servoPin = 18; // 適切なGPIOピン番号を指定
-const servo = new Gpio(servoPin, { mode: Gpio.OUTPUT });
+const PORT = process.env.PORT || 3000;
 
-let pulseWidth = 1000;
-let increment = 100;
-
-app.post('/control_servo', (req, res) => {
-    servo.servoWrite(pulseWidth);
-    sleep.sleep(1);
-    pulseWidth += increment;
-    if (pulseWidth >= 2000) {
-        increment = -100;
-    } else if (pulseWidth <= 1000) {
-        increment = 100;
-    }
-    servo.servoWrite(0);
-    res.json({ message: 'サーボモータを動かしました' });
+// サーバー側での時刻チェックと通知
+const job = schedule.scheduleJob('11 5 * * *', () => {
+    const currentTime = new Date().toLocaleTimeString();
+    io.emit('time', currentTime);
 });
 
-const PORT = 8000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+// Socket.ioの接続イベントを処理
+io.on('connection', (socket) => {
+    console.log('A client connected');
+
+    socket.on('disconnect', () => {
+        console.log('Client disconnected');
+    });
+});
+
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
