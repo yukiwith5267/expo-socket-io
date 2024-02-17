@@ -6,18 +6,15 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// サーバーがポート3000でリッスン
-server.listen(3000, () => {
-    console.log('Listening on port 3000');
+server.listen(8000, () => {
+    console.log('Listening on port 8000');
 });
 
-// 毎分チェックして、7時50分になったらクライアントに通知
+// 10秒ごとにクライアントに通知
 setInterval(() => {
-    const date = new Date();
-    if (date.getHours() === 7 && date.getMinutes() === 50) {
-        io.emit('notification', 'It\'s 7:50 AM!'); // クライアント全員に通知
-    }
-}, 60000); // 60000ミリ秒（1分）ごとにチェック
+    // 通知のメッセージを変更可能です。ここでは例として固定のメッセージを使用しています。
+    io.emit('notification', 'Regular 10-second notification'); // クライアント全員に通知
+}, 10000); // 10000ミリ秒（10秒）ごとにチェック
 
 io.on('connection', (socket) => {
     console.log('A user connected');
