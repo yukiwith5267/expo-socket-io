@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { View, Text, Alert } from 'react-native'; // TextとAlertをインポート
 import io from 'socket.io-client';
 
 const socket = io('http://localhost:3000'); // サーバーのアドレスに合わせてください
@@ -6,7 +7,7 @@ const socket = io('http://localhost:3000'); // サーバーのアドレスに合
 function App() {
     useEffect(() => {
         socket.on('notification', (message) => {
-            alert(message); // ブラウザのアラートで通知を表示
+            Alert.alert("Notification", message); // React NativeのAlertを使用
         });
 
         return () => {
@@ -15,9 +16,9 @@ function App() {
     }, []);
 
     return (
-        <div className="App">
-            <h1>React Socket.IO Example</h1>
-        </div>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}> // スタイルを適用して中央に配置
+            <Text style={{ fontSize: 24 }}>React Socket.IO Example</Text> // Textコンポーネントを使用
+        </View>
     );
 }
 
