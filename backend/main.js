@@ -1,31 +1,27 @@
 const express = require('express');
-const { Gpio } = require('pigpio');
-const cors = require('cors');
-const sleep = require('sleep');
+const http = require('http');
+const socketIo = require('socket.io');
 
 const app = express();
-app.use(cors());
+const server = http.createServer(app);
+const io = socketIo(server);
 
-const servoPin = 18; // 適切なGPIOピン番号を指定
-const servo = new Gpio(servoPin, { mode: Gpio.OUTPUT });
-
-let pulseWidth = 1000;
-let increment = 100;
-
-app.post('/control_servo', (req, res) => {
-    servo.servoWrite(pulseWidth);
-    sleep.sleep(1);
-    pulseWidth += increment;
-    if (pulseWidth >= 2000) {
-        increment = -100;
-    } else if (pulseWidth <= 1000) {
-        increment = 100;
-    }
-    servo.servoWrite(0);
-    res.json({ message: 'サーボモータを動かしました' });
+// サーバーがポート3000でリッスン
+server.listen(3000, () => {
+    console.log('Listening on port 3000');
 });
 
-const PORT = 8000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+// 毎分チェックして、7時50分になったらクライアントに通知
+setInterval(() => {
+    const date = new Date();
+    if (date.getHours() === 7 && date.getMinutes() === 50) {
+        io.emit('notification', 'It\'s 7:50 AM!'); // クライアント全員に通知
+    }
+}, 60000); // 60000ミリ秒（1分）ごとにチェック
+
+io.on('connection', (socket) => {
+    console.log('A user connected');
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+    });
 });
