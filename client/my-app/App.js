@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, Alert } from 'react-native'; // TextとAlertをインポート
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:3000'); // サーバーのアドレスに合わせてください
+const socket = io('https://8beb-114-48-56-200.ngrok-free.app'); // サーバーのアドレスに合わせてください
 
 function App() {
     useEffect(() => {
@@ -16,8 +16,8 @@ function App() {
     }, []);
 
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}> // スタイルを適用して中央に配置
-            <Text style={{ fontSize: 24 }}>React Socket.IO Example</Text> // Textコンポーネントを使用
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={{ fontSize: 24 }}>React Socket.IO Example</Text>
         </View>
     );
 }
